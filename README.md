@@ -4,4 +4,6 @@
 
 [py](dm_problem_set_1.py)
 
+[ipynb](DM_Problem_set_1.ipynb)
+
 [Markdown report]
