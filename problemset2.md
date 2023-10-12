@@ -19,7 +19,7 @@ plot(image)
 
 ## Resize the image
 
-The image is resized in a (224X224x3) size. The image and the code is shown below.
+The image is resized in a (224X224x3) size.
 
 ### Code
 
