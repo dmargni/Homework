@@ -8,4 +8,4 @@
 
 [Markdown report](report.md)
 
-[Guess the number]()
+[Guess the number](guessthenumber.html)
