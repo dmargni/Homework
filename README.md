@@ -8,4 +8,4 @@
 
 [Markdown report](report.md)
 
-[Guess the number](guessthenumber.html)
+[Guess the number](https://dmargni.github.io/Math-for-data-science/guessthenumber.html)
