@@ -9,12 +9,12 @@ First we import Flower 102 dataset on our notebook and choose which image we wan
 
 ### Code
 
-Load Flower 102 and visualisation
+    Load Flower 102 and visualisation
 
-import matplotlib.pyplot as plt
-def plot(x,title=None):
-    # Move tensor to CPU and convert to numpy
-    x_np = x.cpu().numpy()
+    import matplotlib.pyplot as plt
+    def plot(x,title=None):
+        # Move tensor to CPU and convert to numpy
+        x_np = x.cpu().numpy()
 
     # If tensor is in (C, H, W) format, transpose to (H, W, C)
     if x_np.shape[0] == 3 or x_np.shape[0] == 1:
@@ -36,41 +36,41 @@ def plot(x,title=None):
     fig.set_size_inches(10, 10)
     plt.show()
 
-# Downloading and extracting the dataset
-# Uncomment the following lines if you are running this in a Jupyter Notebook
-!wget https://gist.githubusercontent.com/JosephKJ/94c7728ed1a8e0cd87fe6a029769cde1/raw/403325f5110cb0f3099734c5edb9f457539c77e9/Oxford-102_Flower_dataset_labels.txt
-!wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
-!unzip 'flower_data.zip'
+    # Downloading and extracting the dataset
+    # Uncomment the following lines if you are running this in a Jupyter Notebook
+    !wget https://gist.githubusercontent.com/JosephKJ/94c7728ed1a8e0cd87fe6a029769cde1/raw/403325f5110cb0f3099734c5edb9f457539c77e9/Oxford-102_Flower_dataset_labels.txt
+    !wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
+    !unzip 'flower_data.zip'
 
-import torch
-from torchvision import datasets, transforms
-import os
-import pandas as pd
+    import torch
+    from torchvision import datasets, transforms
+    import os
+    import pandas as pd
 
-# Directory and transforms
-data_dir = '/content/flower_data/'
-mean = [0.485, 0.456, 0.406]
-std = [0.229, 0.224, 0.225]
+    # Directory and transforms
+    data_dir = '/content/flower_data/'
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
 
-data_transform = transforms.Compose([
+    data_transform = transforms.Compose([
     transforms.RandomResizedCrop(224),
     transforms.ToTensor(),
     transforms.Normalize(mean, std)
-])
+    ])
 
-# Load the dataset using ImageFolder
-dataset = datasets.ImageFolder(os.path.join(data_dir, 'train'), data_transform)
-dataset_labels = pd.read_csv('Oxford-102_Flower_dataset_labels.txt', header=None)[0].str.replace("'", "").str.strip()
+    # Load the dataset using ImageFolder
+    dataset = datasets.ImageFolder(os.path.join(data_dir, 'train'), data_transform)
+    dataset_labels = pd.read_csv('Oxford-102_Flower_dataset_labels.txt', header=None)[0].str.replace("'", "").str.strip()
 
-# Load the dataset into a DataLoader for batching
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=len(dataset), shuffle=False)
+    # Load the dataset into a DataLoader for batching
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=len(dataset), shuffle=False)
 
-# Extract the batch of images and labels
-images, labels = next(iter(dataloader))
+    # Extract the batch of images and labels
+    images, labels = next(iter(dataloader))
 
-print(f"Images tensor shape: {images.shape}")
-print(f"Labels tensor shape: {labels.shape}")
+    print(f"Images tensor shape: {images.shape}")
+    print(f"Labels tensor shape: {labels.shape}")
+  
 
-
-i = 55
-plot(images[i],dataset_labels[i]);
+    i = 55
+    plot(images[i],dataset_labels[i]);
