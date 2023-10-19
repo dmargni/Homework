@@ -5,57 +5,72 @@ The notebook can be seen [here](https://colab.research.google.com/drive/1ETB9I7q
 
 ## Load Flowers 102 dataset
 
-First we import Flower 102 dataset on our notebook.
+First we import Flower 102 dataset on our notebook and choose which image we wanr.
 
 ### Code
 
-import torch
+Load Flower 102 and visualisation
+
 import matplotlib.pyplot as plt
+def plot(x,title=None):
+    # Move tensor to CPU and convert to numpy
+    x_np = x.cpu().numpy()
 
-def plot_feature_maps_with_filters(feature_maps, filters):
-    # Remove batch dimension if it exists
-    if feature_maps.dim() == 4:
-        feature_maps = feature_maps.squeeze(0)
+    # If tensor is in (C, H, W) format, transpose to (H, W, C)
+    if x_np.shape[0] == 3 or x_np.shape[0] == 1:
+        x_np = x_np.transpose(1, 2, 0)
 
-    # Normalize feature maps to [0, 1]
-    feature_maps = (feature_maps - feature_maps.min()) / (feature_maps.max() - feature_maps.min())
+    # If grayscale, squeeze the color channel
+    if x_np.shape[2] == 1:
+        x_np = x_np.squeeze(2)
 
-    def add_filter_to_feature_map(filter_tensor, feature_map_tensor):
-        # Ensure the feature map is 2D [H, W]
-        if feature_map_tensor.dim() > 2:
-            feature_map_tensor = feature_map_tensor.squeeze(0)
+    x_np = x_np.clip(0, 1)
 
-        # Convert grayscale feature map to RGB by repeating the single channel 3 times
-        feature_map_rgb = feature_map_tensor.unsqueeze(0).repeat((3, 1, 1))
-
-        # Normalize the filter to [0, 1]
-        filter_tensor = (filter_tensor - filter_tensor.min()) / (filter_tensor.max() - filter_tensor.min())
-
-        # Ensure the filter fits into the feature map
-        min_dim = min(feature_map_tensor.shape)
-        filter_size = min(filter_tensor.shape[-1], min_dim)
-
-        # Crop the filter if needed
-        filter_cropped = filter_tensor[:, :filter_size, :filter_size]
-
-        # Overlay the RGB filter at the lower-left corner of the feature map
-        feature_map_rgb[:, -filter_size:, :filter_size] = filter_cropped
-
-        # Clip the values to be in the range [0, 1]
-        feature_map_rgb = torch.clamp(feature_map_rgb, 0, 1)
-
-        return feature_map_rgb
-
-    # Plot montage of feature maps
-    fig, axes = plt.subplots(8, 8, figsize=(15, 15))
-
-    for ax, feature_map, filter_ in zip(axes.flat, feature_maps, filters):
-        # Add RGB filter to grayscale feature map
-        modified_feature_map = add_filter_to_feature_map(filter_, feature_map)
-
-        # Plot modified feature map
-        ax.imshow(modified_feature_map.permute(1, 2, 0).cpu().numpy(), interpolation='none')  # Added 'none' interpolation
-        ax.axis('off')
-
+    fig, ax = plt.subplots()
+    if len(x_np.shape) == 2:  # Grayscale
+        im = ax.imshow(x_np, cmap='gray')
+    else:
+        im = ax.imshow(x_np)
+    plt.title(title)
+    ax.axis('off')
+    fig.set_size_inches(10, 10)
     plt.show()
 
+# Downloading and extracting the dataset
+# Uncomment the following lines if you are running this in a Jupyter Notebook
+!wget https://gist.githubusercontent.com/JosephKJ/94c7728ed1a8e0cd87fe6a029769cde1/raw/403325f5110cb0f3099734c5edb9f457539c77e9/Oxford-102_Flower_dataset_labels.txt
+!wget https://s3.amazonaws.com/content.udacity-data.com/courses/nd188/flower_data.zip
+!unzip 'flower_data.zip'
+
+import torch
+from torchvision import datasets, transforms
+import os
+import pandas as pd
+
+# Directory and transforms
+data_dir = '/content/flower_data/'
+mean = [0.485, 0.456, 0.406]
+std = [0.229, 0.224, 0.225]
+
+data_transform = transforms.Compose([
+    transforms.RandomResizedCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean, std)
+])
+
+# Load the dataset using ImageFolder
+dataset = datasets.ImageFolder(os.path.join(data_dir, 'train'), data_transform)
+dataset_labels = pd.read_csv('Oxford-102_Flower_dataset_labels.txt', header=None)[0].str.replace("'", "").str.strip()
+
+# Load the dataset into a DataLoader for batching
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=len(dataset), shuffle=False)
+
+# Extract the batch of images and labels
+images, labels = next(iter(dataloader))
+
+print(f"Images tensor shape: {images.shape}")
+print(f"Labels tensor shape: {labels.shape}")
+
+
+i = 55
+plot(images[i],dataset_labels[i]);
