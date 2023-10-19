@@ -74,3 +74,5 @@ First we import Flower 102 dataset on our notebook and choose which image we wan
 
     i = 55
     plot(images[i],dataset_labels[i]);
+
+## Load preset 
